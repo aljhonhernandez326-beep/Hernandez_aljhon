@@ -1,31 +1,71 @@
 <?php
-class UserController extends Controller
-{
-    public function index()
+defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
+
+/**
+ * Controller: UserController
+ * 
+ * Automatically generated via CLI.
+ */
+class UserController extends Controller {
+    public function __construct()
     {
-        $model = $this->model('UserModel');
+        parent::__construct();
+        $this->call->database();
+        $this->call->model('UserModel');
+    }
 
-        // Search keyword
-        $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
+    public function show(){
+        $data['users'] = $this->UserModel->all();
+        $this->call->view('show', $data);
+    }
 
-        // Pagination setup
-        $limit = 5; // rows per page
-        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        if ($page < 1) $page = 1;
-        $offset = ($page - 1) * $limit;
+    public function create() {
+        if($this->io->method() == 'post'){
+            $lastname = $this->io->post('last_name');
+            $firstname = $this->io->post('first_name');
+            $email = $this->io->post('email');
+            $data = array(
+                'last_name' => $lastname,
+                'first_name' => $firstname,
+                'email' => $email
+            );
+            if($this->UserModel->insert($data)){
+                redirect('users/show');
+            } else {
+                echo 'Something went wrong';
+            }
+        } else {
+            $this->call->view('create');
+        }
+        
+    }
 
-        // Get data from model
-        $users = $model->getUsers($keyword, $limit, $offset);
-        $total = $model->countUsers($keyword);
+    public function update($id) {
+        $data['user'] = $this->UserModel->find($id);
+        if($this->io->method() == 'post'){
+            $lastname = $this->io->post('last_name');
+            $firstname = $this->io->post('first_name');
+            $email = $this->io->post('email');
+            $data = array(
+                'last_name' => $lastname,
+                'first_name' => $firstname,
+                'email' => $email
+            );
+            if($this->UserModel->update($id, $data)){
+                redirect('users/show');
+            } else {
+                echo 'Something went wrong';
+            }
+        } else {
+            $this->call->view('update', $data);
+        }
+    }
 
-        $data = [
-            'users'  => $users,
-            'total'  => $total,
-            'limit'  => $limit,
-            'page'   => $page,
-            'search' => $keyword
-        ];
-
-        $this->view('users/index', $data);
+    public function delete($id){
+        if($this->UserModel->delete($id)){
+            redirect('users/show');
+        } else {
+            echo 'Something went wrong';
+        }
     }
 }
