@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -81,7 +81,8 @@
         .create-btn:hover {
             background: #b71c1c;
         }
-        /* Pagination */
+
+        /* Pagination styles */
         .pagination {
             text-align: center;
             margin: 20px 0;
@@ -122,12 +123,12 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($users as $user): ?>
+                <?php foreach (html_escape($users) as $user):?>
                 <tr>
-                    <td><?=html_escape($user['id']);?></td>
-                    <td><?=html_escape($user['last_name']);?></td>
-                    <td><?=html_escape($user['first_name']);?></td>
-                    <td><?=html_escape($user['email']);?></td>
+                    <td><?=$user['id'];?></td>
+                    <td><?=$user['last_name'];?></td>
+                    <td><?=$user['first_name'];?></td>
+                    <td><?=$user['email'];?></td>
                     <td class="actions">
                         <a href="<?=site_url('users/update/'.$user['id']);?>">Update</a>
                         <a href="<?=site_url('users/delete/'.$user['id']);?>">Delete</a>

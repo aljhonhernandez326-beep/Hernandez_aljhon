@@ -1,26 +1,38 @@
-<?php
-defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
+<?php defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-/**
- * Controller: UserController
- * 
- * Automatically generated via CLI.
- */
 class UserController extends Controller {
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->call->database();
         $this->call->model('UserModel');
     }
 
-    public function show(){
-        $data['users'] = $this->UserModel->all();
+    public function show($page = 1) {
+        // Get all users
+        $users = $this->UserModel->all();
+
+        // Pagination setup
+        $limit = 5; // records per page
+        $total_users = count($users);
+        $total_pages = ceil($total_users / $limit);
+
+        // Default page check
+        if ($page < 1) $page = 1;
+        if ($page > $total_pages) $page = $total_pages;
+
+        // Slice the array for the current page
+        $offset = ($page - 1) * $limit;
+        $data['users'] = array_slice($users, $offset, $limit);
+
+        // Pass pagination info
+        $data['total_pages'] = $total_pages;
+        $data['current_page'] = $page;
+
         $this->call->view('show', $data);
     }
 
     public function create() {
-        if($this->io->method() == 'post'){
+        if ($this->io->method() == 'post') {
             $lastname = $this->io->post('last_name');
             $firstname = $this->io->post('first_name');
             $email = $this->io->post('email');
@@ -29,7 +41,7 @@ class UserController extends Controller {
                 'first_name' => $firstname,
                 'email' => $email
             );
-            if($this->UserModel->insert($data)){
+            if ($this->UserModel->insert($data)) {
                 redirect('users/show');
             } else {
                 echo 'Something went wrong';
@@ -37,12 +49,11 @@ class UserController extends Controller {
         } else {
             $this->call->view('create');
         }
-        
     }
 
     public function update($id) {
         $data['user'] = $this->UserModel->find($id);
-        if($this->io->method() == 'post'){
+        if ($this->io->method() == 'post') {
             $lastname = $this->io->post('last_name');
             $firstname = $this->io->post('first_name');
             $email = $this->io->post('email');
@@ -51,7 +62,7 @@ class UserController extends Controller {
                 'first_name' => $firstname,
                 'email' => $email
             );
-            if($this->UserModel->update($id, $data)){
+            if ($this->UserModel->update($id, $data)) {
                 redirect('users/show');
             } else {
                 echo 'Something went wrong';
@@ -61,8 +72,8 @@ class UserController extends Controller {
         }
     }
 
-    public function delete($id){
-        if($this->UserModel->delete($id)){
+    public function delete($id) {
+        if ($this->UserModel->delete($id)) {
             redirect('users/show');
         } else {
             echo 'Something went wrong';
