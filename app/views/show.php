@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,9 +23,36 @@
         h1 {
             text-align: center;
             color: #d32f2f;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
             font-size: 1.7rem;
         }
+
+        /* Search bar */
+        .search-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-form input[type="text"] {
+            padding: 10px;
+            width: 60%;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .search-form button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            background: #d32f2f;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-form button:hover {
+            background: #b71c1c;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -112,6 +139,13 @@
 <body>
     <div class="container">
         <h1>User List</h1>
+
+        <!-- Search Form -->
+        <form method="get" action="<?= site_url('users/show'); ?>" class="search-form">
+            <input type="text" name="q" placeholder="Search by name or email..." value="<?= isset($_GET['q']) ? htmlspecialchars($_GET['q']) : '' ?>">
+            <button type="submit">Search</button>
+        </form>
+
         <table>
             <thead>
                 <tr>
@@ -123,35 +157,41 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach (html_escape($users) as $user):?>
-                <tr>
-                    <td><?=$user['id'];?></td>
-                    <td><?=$user['last_name'];?></td>
-                    <td><?=$user['first_name'];?></td>
-                    <td><?=$user['email'];?></td>
-                    <td class="actions">
-                        <a href="<?=site_url('users/update/'.$user['id']);?>">Update</a>
-                        <a href="<?=site_url('users/delete/'.$user['id']);?>">Delete</a>
-                    </td>
-                </tr>
-                <?php endforeach;?>
+                <?php if (!empty($users)): ?>
+                    <?php foreach (html_escape($users) as $user):?>
+                    <tr>
+                        <td><?=$user['id'];?></td>
+                        <td><?=$user['last_name'];?></td>
+                        <td><?=$user['first_name'];?></td>
+                        <td><?=$user['email'];?></td>
+                        <td class="actions">
+                            <a href="<?=site_url('users/update/'.$user['id']);?>">Update</a>
+                            <a href="<?=site_url('users/delete/'.$user['id']);?>">Delete</a>
+                        </td>
+                    </tr>
+                    <?php endforeach;?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5" style="text-align:center; color:#777;">No results found.</td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
 
         <!-- Pagination -->
         <div class="pagination">
             <?php if ($current_page > 1): ?>
-                <a href="<?=site_url('users/show/'.($current_page-1));?>">&laquo; Prev</a>
+                <a href="<?=site_url('users/show/'.($current_page-1).'?q='.urlencode($_GET['q'] ?? ''));?>">&laquo; Prev</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <a href="<?=site_url('users/show/'.$i);?>" class="<?= ($i == $current_page) ? 'active' : '' ?>">
+                <a href="<?=site_url('users/show/'.$i.'?q='.urlencode($_GET['q'] ?? ''));?>" class="<?= ($i == $current_page) ? 'active' : '' ?>">
                     <?=$i?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($current_page < $total_pages): ?>
-                <a href="<?=site_url('users/show/'.($current_page+1));?>">Next &raquo;</a>
+                <a href="<?=site_url('users/show/'.($current_page+1).'?q='.urlencode($_GET['q'] ?? ''));?>">Next &raquo;</a>
             <?php endif; ?>
         </div>
 

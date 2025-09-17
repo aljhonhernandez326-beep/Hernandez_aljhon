@@ -1,4 +1,4 @@
-<?php defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
+<?php defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed'); 
 
 class UserController extends Controller {
     public function __construct() {
@@ -8,25 +8,34 @@ class UserController extends Controller {
     }
 
     public function show($page = 1) {
-        // Get all users
-        $users = $this->UserModel->all();
+        // Get search keyword from GET request
+        $keyword = $this->io->get('q');  
+
+        if (!empty($keyword)) {
+            // If searching, filter results
+            $users = $this->UserModel->search($keyword);
+        } else {
+            // Otherwise, show all users
+            $users = $this->UserModel->all();
+        }
 
         // Pagination setup
         $limit = 5; // records per page
         $total_users = count($users);
-        $total_pages = ceil($total_users / $limit);
+        $total_pages = ($total_users > 0) ? ceil($total_users / $limit) : 1;
 
         // Default page check
         if ($page < 1) $page = 1;
         if ($page > $total_pages) $page = $total_pages;
 
-        // Slice the array for the current page
+        // Slice array for current page
         $offset = ($page - 1) * $limit;
         $data['users'] = array_slice($users, $offset, $limit);
 
-        // Pass pagination info
+        // Pass pagination + search info
         $data['total_pages'] = $total_pages;
         $data['current_page'] = $page;
+        $data['keyword'] = $keyword;
 
         $this->call->view('show', $data);
     }
