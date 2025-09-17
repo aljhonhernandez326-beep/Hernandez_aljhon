@@ -5,34 +5,16 @@ class UserModel extends Model {
     protected $table = 'students';
     protected $primary_key = 'id';
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
-    // Get all users (with optional search + pagination)
-    public function get_users($limit, $offset, $search = null) {
-        $this->db->table($this->table);
-
-        if (!empty($search)) {
-            $this->db->like('first_name', $search);
-            $this->db->or_like('last_name', $search);
-            $this->db->or_like('email', $search);
-        }
-
-        return $this->db->limit($limit, $offset)->get_all();
-    }
-
-    // Count total users (with optional search)
-    public function count_users($search = null) {
-        $this->db->table($this->table);
-
-        if (!empty($search)) {
-            $this->db->like('first_name', $search);
-            $this->db->or_like('last_name', $search);
-            $this->db->or_like('email', $search);
-        }
-
-        return $this->db->count();
+    // Search function
+    public function search($keyword) {
+        return $this->db->table($this->table)
+                        ->like('first_name', $keyword)
+                        ->or_like('last_name', $keyword)
+                        ->or_like('email', $keyword)
+                        ->get_all();
     }
 }

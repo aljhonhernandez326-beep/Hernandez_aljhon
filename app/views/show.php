@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -25,6 +25,29 @@
             color: #d32f2f;
             margin-bottom: 28px;
             font-size: 1.7rem;
+        }
+        .search-box {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-box input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .search-box button {
+            padding: 10px 20px;
+            border: none;
+            background: #d32f2f;
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .search-box button:hover {
+            background: #b71c1c;
         }
         table {
             width: 100%;
@@ -81,35 +104,6 @@
         .create-btn:hover {
             background: #b71c1c;
         }
-
-        /* Search box */
-        .search-box {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .search-box input {
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 1rem;
-            width: 220px;
-        }
-        .search-box button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            background: #d32f2f;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            margin-left: 6px;
-            transition: background 0.2s;
-        }
-        .search-box button:hover {
-            background: #b71c1c;
-        }
-
-        /* Pagination styles */
         .pagination {
             text-align: center;
             margin: 20px 0;
@@ -140,11 +134,10 @@
     <div class="container">
         <h1>User List</h1>
 
-        <!-- Search form -->
+        <!-- Search box -->
         <div class="search-box">
             <form method="get" action="<?= site_url('users/show'); ?>">
-                <input type="text" name="search" placeholder="Search..." 
-                       value="<?= isset($_GET['search']) ? html_escape($_GET['search']) : '' ?>">
+                <input type="text" name="search" placeholder="Search users..." value="<?= html_escape($search); ?>">
                 <button type="submit">Search</button>
             </form>
         </div>
@@ -161,21 +154,21 @@
             </thead>
             <tbody>
                 <?php if (!empty($users)): ?>
-                    <?php foreach (html_escape($users) as $user):?>
-                    <tr>
-                        <td><?= $user['id']; ?></td>
-                        <td><?= $user['last_name']; ?></td>
-                        <td><?= $user['first_name']; ?></td>
-                        <td><?= $user['email']; ?></td>
-                        <td class="actions">
-                            <a href="<?= site_url('users/update/'.$user['id']); ?>">Update</a>
-                            <a href="<?= site_url('users/delete/'.$user['id']); ?>">Delete</a>
-                        </td>
-                    </tr>
-                    <?php endforeach;?>
+                    <?php foreach (html_escape($users) as $user): ?>
+                        <tr>
+                            <td><?= $user['id']; ?></td>
+                            <td><?= $user['last_name']; ?></td>
+                            <td><?= $user['first_name']; ?></td>
+                            <td><?= $user['email']; ?></td>
+                            <td class="actions">
+                                <a href="<?= site_url('users/update/'.$user['id']); ?>">Update</a>
+                                <a href="<?= site_url('users/delete/'.$user['id']); ?>">Delete</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" style="text-align:center; color:#999;">No results found.</td>
+                        <td colspan="5" style="text-align:center;">No records found</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -183,22 +176,18 @@
 
         <!-- Pagination -->
         <div class="pagination">
-            <?php 
-                $searchParam = isset($_GET['search']) ? '&search='.urlencode($_GET['search']) : '';
-            ?>
             <?php if ($current_page > 1): ?>
-                <a href="<?= site_url('users/show/'.($current_page-1)).'?'.$searchParam; ?>">&laquo; Prev</a>
+                <a href="<?= site_url('users/show/'.($current_page-1).'?search='.$search); ?>">&laquo; Prev</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <a href="<?= site_url('users/show/'.$i).'?'.$searchParam; ?>" 
-                   class="<?= ($i == $current_page) ? 'active' : '' ?>">
+                <a href="<?= site_url('users/show/'.$i.'?search='.$search); ?>" class="<?= ($i == $current_page) ? 'active' : '' ?>">
                     <?= $i ?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($current_page < $total_pages): ?>
-                <a href="<?= site_url('users/show/'.($current_page+1)).'?'.$searchParam; ?>">Next &raquo;</a>
+                <a href="<?= site_url('users/show/'.($current_page+1).'?search='.$search); ?>">Next &raquo;</a>
             <?php endif; ?>
         </div>
 
