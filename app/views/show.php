@@ -1,5 +1,4 @@
-
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -26,7 +25,6 @@
             color: #d32f2f;
             margin-bottom: 28px;
             font-size: 1.7rem;
-            font-family: 'Roboto Slab', serif;
         }
         table {
             width: 100%;
@@ -35,7 +33,6 @@
             background: #f9fafb;
             border-radius: 8px;
             overflow: hidden;
-            font-family: 'Roboto Slab', serif;
         }
         th, td {
             padding: 12px 14px;
@@ -45,7 +42,6 @@
             background: #d32f2f;
             color: #fff;
             font-weight: 700;
-            font-family: 'Roboto Slab', serif;
         }
         tr:nth-child(even) {
             background: #f4f6f8;
@@ -56,14 +52,12 @@
         td {
             color: #d32f2f;
             font-size: 1rem;
-            font-family: 'Roboto Slab', serif;
         }
         .actions a {
             color: #d32f2f;
             text-decoration: none;
             margin-right: 8px;
             font-size: 0.98rem;
-            font-family: 'Roboto Slab', serif;
             transition: color 0.2s;
         }
         .actions a:hover {
@@ -80,13 +74,37 @@
             font-size: 1rem;
             cursor: pointer;
             text-decoration: none;
-            font-family: 'Roboto Slab', serif;
             font-weight: 700;
             transition: background 0.2s;
             margin-top: 10px;
         }
         .create-btn:hover {
             background: #b71c1c;
+        }
+        /* Pagination */
+        .pagination {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .pagination a {
+            display: inline-block;
+            padding: 8px 14px;
+            margin: 0 4px;
+            border-radius: 5px;
+            background: #f4f6f8;
+            color: #d32f2f;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+        }
+        .pagination a:hover {
+            background: #d32f2f;
+            color: #fff;
+        }
+        .pagination .active {
+            background: #d32f2f;
+            color: #fff;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -104,12 +122,12 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach (html_escape($users) as $user):?>
+                <?php foreach ($users as $user): ?>
                 <tr>
-                    <td><?=$user['id'];?></td>
-                    <td><?=$user['last_name'];?></td>
-                    <td><?=$user['first_name'];?></td>
-                    <td><?=$user['email'];?></td>
+                    <td><?=html_escape($user['id']);?></td>
+                    <td><?=html_escape($user['last_name']);?></td>
+                    <td><?=html_escape($user['first_name']);?></td>
+                    <td><?=html_escape($user['email']);?></td>
                     <td class="actions">
                         <a href="<?=site_url('users/update/'.$user['id']);?>">Update</a>
                         <a href="<?=site_url('users/delete/'.$user['id']);?>">Delete</a>
@@ -118,6 +136,24 @@
                 <?php endforeach;?>
             </tbody>
         </table>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <?php if ($current_page > 1): ?>
+                <a href="<?=site_url('users/show/'.($current_page-1));?>">&laquo; Prev</a>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <a href="<?=site_url('users/show/'.$i);?>" class="<?= ($i == $current_page) ? 'active' : '' ?>">
+                    <?=$i?>
+                </a>
+            <?php endfor; ?>
+
+            <?php if ($current_page < $total_pages): ?>
+                <a href="<?=site_url('users/show/'.($current_page+1));?>">Next &raquo;</a>
+            <?php endif; ?>
+        </div>
+
         <a class="create-btn" href="<?=site_url('users/create');?>">+ Create Record</a>
     </div>
 </body>
