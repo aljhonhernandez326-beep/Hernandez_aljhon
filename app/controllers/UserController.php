@@ -1,4 +1,4 @@
-<?php defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed'); 
+<?php defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
 class UserController extends Controller {
     public function __construct() {
@@ -8,33 +8,25 @@ class UserController extends Controller {
     }
 
     public function show($page = 1) {
-        // Get search input safely
-        $search = $this->io->get('search');
-
-        // If searching
-        if (!empty($search)) {
-            $users = $this->UserModel->search($search);
-        } else {
-            $users = $this->UserModel->all();
-        }
+        // Get all users
+        $users = $this->UserModel->all();
 
         // Pagination setup
         $limit = 5; // records per page
         $total_users = count($users);
-        $total_pages = ($total_users > 0) ? ceil($total_users / $limit) : 1;
+        $total_pages = ceil($total_users / $limit);
 
         // Default page check
         if ($page < 1) $page = 1;
         if ($page > $total_pages) $page = $total_pages;
 
-        // Slice array for current page
+        // Slice the array for the current page
         $offset = ($page - 1) * $limit;
         $data['users'] = array_slice($users, $offset, $limit);
 
-        // Pass pagination + search info
+        // Pass pagination info
         $data['total_pages'] = $total_pages;
         $data['current_page'] = $page;
-        $data['search'] = $search;
 
         $this->call->view('show', $data);
     }
