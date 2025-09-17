@@ -44,7 +44,8 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 */
 
 $router->get('/', 'UserController::show');
-$router->get('/users/show', 'UserController::show');
+$router->get('/users/show', 'UserController::show');              // default page (1)
+$router->get('/users/show/{page}', 'UserController::show');       // pagination pages
 $router->match('/users/create', 'UserController::create', ['GET','POST']);
 $router->match('/users/update/{id}', 'UserController::update', ['GET','POST']);
 $router->get('/users/delete/{id}', 'UserController::delete');
