@@ -8,34 +8,30 @@ class UserController extends Controller {
     }
 
     public function show($page = 1) {
-        // Get search keyword from GET request
-        $keyword = $this->io->get('q');  
-
-        if (!empty($keyword)) {
-            // If searching, filter results
-            $users = $this->UserModel->search($keyword);
-        } else {
-            // Otherwise, show all users
-            $users = $this->UserModel->all();
-        }
+        // Get search keyword
+        $search = $this->io->get('search');  
 
         // Pagination setup
         $limit = 5; // records per page
-        $total_users = count($users);
-        $total_pages = ($total_users > 0) ? ceil($total_users / $limit) : 1;
-
-        // Default page check
-        if ($page < 1) $page = 1;
-        if ($page > $total_pages) $page = $total_pages;
-
-        // Slice array for current page
         $offset = ($page - 1) * $limit;
-        $data['users'] = array_slice($users, $offset, $limit);
 
-        // Pass pagination + search info
+        if (!empty($search)) {
+            // If searching
+            $users = $this->UserModel->search($search, $limit, $offset);
+            $total_users = $this->UserModel->countSearch($search);
+        } else {
+            // Normal pagination (no search)
+            $users = $this->UserModel->getUsers($limit, $offset);
+            $total_users = $this->UserModel->countAll();
+        }
+
+        $total_pages = ceil($total_users / $limit);
+
+        // Pass data to view
+        $data['users'] = $users;
         $data['total_pages'] = $total_pages;
         $data['current_page'] = $page;
-        $data['keyword'] = $keyword;
+        $data['search'] = $search; // keep search value in input
 
         $this->call->view('show', $data);
     }
